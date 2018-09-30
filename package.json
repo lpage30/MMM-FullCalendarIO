@@ -1,0 +1,23 @@
+{
+  "name": "MMM-FullCalendarIO",
+  "version": "1.0.0",
+  "description": "MagicMirror Module rendering Calendar using FullCalendar.io",
+  "main": "generateCalendarHTML.js",
+  "scripts": {
+    "build": "rm -rf ./generatedCalendarHTML; node ./generateCalendarHTML.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/lpage30/MMM-FullCalendarIO.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/lpage30/MMM-FullCalendarIO/issues"
+  },
+  "homepage": "https://github.com/lpage30/MMM-FullCalendarIO#readme",
+  "dependencies": {
+    "fullcalendar": "^3.9.0",
+    "jquery": "^3.3.1"
+  }
+}
