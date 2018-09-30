@@ -8,7 +8,35 @@ const CALENDAR_HTML_TEMPLATE_FILEPATH = './templates/calendarhtml.template';
 
 const CONFIGURATION_PLACEMENT_TOKEN = new RegExp('{{CALENDAR_CONFIGURATION}}', 'ig');
 const CALENDAR_JS_PLACEMENT_TOKEN = new RegExp('{{CALENDAR_JS}}', 'ig');
-
+const TAB_SPACING = '    ';
+const toJavascriptString = (object, spacing = '') => {
+    if(typeof object === 'string') return `"${object}"`;
+    if(typeof object === 'function' || typeof object === 'number') return object.toString();
+    if(Array.isArray(object)) {
+        const lines = [];
+        lines.push('[');
+        object.forEach((item, index) => {
+            if(index > 0) {
+                lines[lines.length-1] += ','; 
+            }
+            lines.push(`${spacing + TAB_SPACING}${toJavascriptString(item, spacing + TAB_SPACING + TAB_SPACING)}`);
+        })
+        lines.push(']');
+        return lines.join('\n');
+    }
+    if(typeof object === 'object') {
+        const lines = [];
+        lines.push('{');
+        Object.keys(object).forEach((key, index) => {
+            if(index > 0) {
+                lines[lines.length-1] += ','; 
+            }
+            lines.push(`${spacing + TAB_SPACING}${key}: ${toJavascriptString(object[key], spacing + TAB_SPACING + TAB_SPACING)}`)
+        })
+        lines.push('}');
+        return lines.join('\n');
+    }
+}
 /**
  * Loads the calendarConfigurations from MM config file.
  * @returns [{ identifier: <MM-Module-Identifier>, config: { fullcalendar: {} }}] configurations for generation.
@@ -30,9 +58,11 @@ const getCalendarConfigurations = () => {
  * @returns {string} javascript snippet to be written to html file contents.
  */
 const generateCalendarJS = (config) => {
-    const calendarConfiguration = JSON.stringify(config.fullcalendar, null, 2);
+    const calendarJSDefaults = require('./templates/calendarJsDefaults');
+    const calendarConfiguration = Object.assign({}, config.fullcalendar, calendarJSDefaults);
+    const calendarConfigurationString = toJavascriptString(calendarConfiguration)
     const calendarJS = fs.readFileSync(CALENDAR_JS_TEMPLATE_FILEPATH, 'utf8');
-    return calendarJS.replace(CONFIGURATION_PLACEMENT_TOKEN, calendarConfiguration);
+    return calendarJS.replace(CONFIGURATION_PLACEMENT_TOKEN, calendarConfigurationString);
 };
 /**
  * Genearte string of HTML code to be written to HTML file for configured calendar(s)
