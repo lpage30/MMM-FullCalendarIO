@@ -15,9 +15,5 @@
   "bugs": {
     "url": "https://github.com/lpage30/MMM-FullCalendarIO/issues"
   },
-  "homepage": "https://github.com/lpage30/MMM-FullCalendarIO#readme",
-  "dependencies": {
-    "fullcalendar": "^3.9.0",
-    "jquery": "^3.3.1"
-  }
+  "homepage": "https://github.com/lpage30/MMM-FullCalendarIO#readme"
 }
