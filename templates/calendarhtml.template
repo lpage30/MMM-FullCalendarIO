@@ -21,6 +21,7 @@
     padding: 0;
     font-family: "Lucida Grande",Helvetica,Arial,Verdana,sans-serif;
     font-size: 14px;
+    background: black;
   }
 
   #calendar {
@@ -28,7 +29,7 @@
     margin: 0 auto;
     width: 93%;
     height: 100%;
-    background: white;
+    background: lightgrey;
     max-width: 900px;
   }
 

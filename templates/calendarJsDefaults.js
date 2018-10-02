@@ -1,8 +1,17 @@
 module.exports = {
     header: {
-        left: 'prev,next today',
+        left: '',
         center: 'title',
-        right: 'month,basicWeek,basicDay'
+        right: ''
+    },
+    footer: {
+        left: 'listDay,listWeek,month',
+        center: '',
+        right: 'prevYear,prev,today,next,nextYear',
+    },
+    views: {
+        listDay: { buttonText: 'day' },
+        listWeek: { buttonText: 'week'}
     },
     eventClick: function(calEvent, jsEvent, view) {
         $('#eventTitle').html('');
