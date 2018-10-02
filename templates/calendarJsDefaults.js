@@ -1,17 +1,22 @@
 module.exports = {
+    aspectRatio: 0.98,
+    height: 'parent',
+    contentHeight: 'auto',
     header: {
         left: '',
         center: 'title',
         right: ''
     },
     footer: {
-        left: 'listDay,listWeek,month',
+        left: 'listDay,listWeek,twoMonths',
         center: '',
         right: 'prevYear,prev,today,next,nextYear',
     },
+    defaultView: 'twoMonths',
     views: {
         listDay: { buttonText: 'day' },
-        listWeek: { buttonText: 'week'}
+        listWeek: { buttonText: 'week'},
+        twoMonths: { type: 'month', duration: { weeks: 6 }, buttonText: 'month' },
     },
     eventClick: function(calEvent, jsEvent, view) {
         $('#eventTitle').html('');
