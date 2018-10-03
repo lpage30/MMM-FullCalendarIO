@@ -1,5 +1,5 @@
 module.exports = {
-    aspectRatio: 0.98,
+    aspectRatio: 0.25,
     height: 'parent',
     contentHeight: 'auto',
     header: {
