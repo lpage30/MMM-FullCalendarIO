@@ -26,7 +26,7 @@
 
   #calendar {
     overflow: visible !important;
-    margin: 30em 4em 0 4em; // puts the calendar ~ in middle of screen
+    margin: 20em 4em 0 4em; // puts the calendar ~ in middle of screen
     width: 50%;
     height: 100%;
     background: lightgrey;
