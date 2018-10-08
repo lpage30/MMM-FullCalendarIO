@@ -12,7 +12,23 @@
 <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
 <script src='https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.9.0/gcal.js'></script>
 <script type='text/javascript'>
-    {{CALENDAR_JS}}
+  var FC = $.fullCalendar; // a reference to FullCalendar's root namespace
+  var MonthView = FC.MonthView;      // the class that all views must inherit from
+  var MultiMonthView = MonthView.extend({
+
+    // make a subclass of MonthView.
+    // This will result in the the view honoring the weeks number and the contentHeight and contentHeight
+
+    initialize: function () {
+      if (this.options.contentHeight !== 'auto') {
+        console.error('MultiMonthView requires contentHeight to be "auto"');
+      }
+    }
+  });
+  FC.views.multimonth = MultiMonthView; // register our class with the view system
+  // you can now use 'multimonth' as a view type
+
+  {{CALENDAR_JS}}
 </script>
 <style>
 
@@ -27,7 +43,7 @@
   #calendar {
     overflow: visible !important;
     margin: 4em 4.5em 0 4em;
-    width: 50%;
+    width: 90%;
     height: 100%;
     background: lightgrey;
   }

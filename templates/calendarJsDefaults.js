@@ -1,5 +1,4 @@
 module.exports = {
-    aspectRatio: 0.25,
     height: 'parent',
     contentHeight: 'auto',
     header: {
@@ -8,15 +7,15 @@ module.exports = {
         right: ''
     },
     footer: {
-        left: 'listDay,listWeek,month, twoMonths',
+        left: 'listDay,listWeek,month,threeMonths',
         center: '',
         right: 'prevYear,prev,today,next,nextYear',
     },
-    defaultView: 'twoMonths',
+    defaultView: 'threeMonths',
     views: {
         listDay: { buttonText: 'day' },
         listWeek: { buttonText: 'week'},
-        twoMonths: { type: 'multimonth', duration: { weeks: 8 }, buttonText: '2-mos' },
+        threeMonths: { type: 'multimonth', duration: { weeks: 12 }, buttonText: '3-mos' },
     },
     eventClick: function(calEvent, jsEvent, view) {
         $('#eventTitle').html('');
