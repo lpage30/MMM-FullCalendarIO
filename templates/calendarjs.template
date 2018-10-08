@@ -1,3 +1,8 @@
+var FC = $.fullCalendar; // a reference to FullCalendar's root namespace
+var MonthView = FC.MonthView;      // the class that all views must inherit from
+var MultiMonthView = MonthView.extend({ // make a subclass of View
+});
+FC.views.multimonth = MultiMonthView; // register our class with the view system
 $(function() {
   $('#calendar').fullCalendar(
     {{CALENDAR_CONFIGURATION}}

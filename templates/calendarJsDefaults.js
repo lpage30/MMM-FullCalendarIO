@@ -8,7 +8,7 @@ module.exports = {
         right: ''
     },
     footer: {
-        left: 'listDay,listWeek,twoMonths',
+        left: 'listDay,listWeek,month, twoMonths',
         center: '',
         right: 'prevYear,prev,today,next,nextYear',
     },
@@ -16,7 +16,7 @@ module.exports = {
     views: {
         listDay: { buttonText: 'day' },
         listWeek: { buttonText: 'week'},
-        twoMonths: { type: 'month', duration: { weeks: 6 }, buttonText: 'month' },
+        twoMonths: { type: 'multimonth', duration: { weeks: 8 }, buttonText: '2-mos' },
     },
     eventClick: function(calEvent, jsEvent, view) {
         $('#eventTitle').html('');
