@@ -17,6 +17,10 @@ module.exports = {
         listWeek: { buttonText: 'week'},
         threeMonths: { type: 'multimonth', duration: { weeks: 12 }, buttonText: '3-mos' },
     },
+    dayRender: function ( date, cell ) { 
+        const color = month_colors[date._d.getMonth()];
+        console.log('HELLO');
+    },
     eventClick: function(calEvent, jsEvent, view) {
         $('#eventTitle').html('');
         $('#eventStart').html('');
