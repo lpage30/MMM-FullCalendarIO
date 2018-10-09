@@ -1,4 +1,47 @@
-const month_colors = [
+var FC = $.fullCalendar; // a reference to FullCalendar's root namespace
+  var MonthView = FC.MonthView;      // the class that all views must inherit from
+  var MultiMonthView = MonthView.extend({
+
+    // make a subclass of MonthView.
+    // This will result in the the view honoring the weeks number and the contentHeight and contentHeight
+
+    initialize: function () {
+      if (this.options.contentHeight !== 'auto') {
+        console.error('MultiMonthView requires contentHeight to be "auto"');
+      }
+    }
+  });
+  FC.views.multimonth = MultiMonthView; // register our class with the view system
+  // you can now use 'multimonth' as a view type
+  const month_names = [
+    'January',
+    'February',
+    'March',
+    'April',
+    'May',
+    'June',
+    'July',
+    'August',
+    'September',
+    'October',
+    'November',
+    'December',
+  ];
+  const month_shortnames = [
+    'Jan',
+    'Feb',
+    'Mar',
+    'Apr',
+    'May',
+    'June',
+    'July',
+    'Aug',
+    'Sept',
+    'Oct',
+    'Nov',
+    'Dec',
+  ];
+  const month_bgcolors = [
     '#003366', // Jan: dark blue
     '#FFFFFF', // Feb: white
     '#333333', // march: charcoal
@@ -9,14 +52,24 @@ const month_colors = [
     '#f5f5dc', // august: vanilla
     '#daa520', // sept: gold/orange
     '#000000', // oct: black
-    '#794044', // nov: brown
+    '#A52A2A', // nov: brown
     '#800000', // dec: maroon 
-];
-$(function() {
-  $('#calendar').fullCalendar(
-    {{CALENDAR_CONFIGURATION}}
-  );
-  $(function () {
+  ];
+  const month_fgcolors = [
+    '#FFFFFF', // Jan: dark blue
+    '#FFFFFF', // Feb: white
+    '#FFFFFF', // march: charcoal
+    '#000000', // april: dull yellow
+    '#000000', // may: green
+    '#000000', // june: tomato
+    '#000000', // july: navy blue
+    '#000000', // august: vanilla
+    '#000000', // sept: gold/orange
+    '#FFFFFF', // oct: black
+    '#FFFFFF', // nov: brown
+    '#FFFFFF', // dec: maroon 
+  ];
+  function adjustMultiMonthView () {
     var today = new Date();
     var spanElements = document.getElementsByClassName('fc-day-number');
     var i;
@@ -34,5 +87,9 @@ $(function() {
           }
       }
     }
+  }
+  $(function() {
+    $('#calendar').fullCalendar(
+      {{CALENDAR_CONFIGURATION}}
+    );
   });
-});
