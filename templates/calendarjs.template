@@ -41,34 +41,10 @@ var FC = $.fullCalendar; // a reference to FullCalendar's root namespace
     'Nov',
     'Dec',
   ];
-  const month_bgcolors = [
-    '#003366', // Jan: dark blue
-    '#FFFFFF', // Feb: white
-    '#333333', // march: charcoal
-    '#fff68f', // april: dull yellow
-    '#008000', // may: green
-    '#8b0000', // june: tomato
-    '#000080', // july: navy blue
-    '#f5f5dc', // august: vanilla
-    '#daa520', // sept: gold/orange
-    '#000000', // oct: black
-    '#A52A2A', // nov: brown
-    '#800000', // dec: maroon 
-  ];
-  const month_fgcolors = [
-    '#FFFFFF', // Jan: dark blue
-    '#FFFFFF', // Feb: white
-    '#FFFFFF', // march: charcoal
-    '#000000', // april: dull yellow
-    '#000000', // may: green
-    '#000000', // june: tomato
-    '#000000', // july: navy blue
-    '#000000', // august: vanilla
-    '#000000', // sept: gold/orange
-    '#FFFFFF', // oct: black
-    '#FFFFFF', // nov: brown
-    '#FFFFFF', // dec: maroon 
-  ];
+  const new_month_colors = {
+    bg: '#0000FF',
+    fg: '#FFFF00',
+  }
   function adjustMultiMonthView () {
     var today = new Date();
     var spanElements = document.getElementsByClassName('fc-day-number');
@@ -76,15 +52,13 @@ var FC = $.fullCalendar; // a reference to FullCalendar's root namespace
     for (i = 0; i < spanElements.length; i += 1) {
       const spanElement = spanElements[i];
       const tdElement = spanElement.parentElement;
-      const date = new Date(spanElement.parentNode.getAttribute('data-date'));
-      if (today.getMonth() !== date.getMonth()) {
-          if(date.getDate() === 1) {
-            spanElement.innerHTML = `<font color="${month_fgcolors[date.getMonth()]}"><B>${month_names[date.getMonth()]} ${date.getDate()}</B></font>`;
-            tdElement.style.borderColor='#000000';
-            tdElement.style.backgroundColor=month_bgcolors[date.getMonth()];
-          } else {
-            spanElement.innerHTML = `${month_shortnames[date.getMonth()]} ${spanElement.innerHTML}`;
-          }
+      const [year, month, day] = spanElement.parentNode.getAttribute('data-date').split('-');
+      tdElement.style.borderTopColor='#000000';
+      spanElement.innerHTML = `<B>${Number(day) === 1 ? month_names[Number(month)-1] : month_shortnames[Number(month)-1]} ${Number(day)}</B>`;
+      if (0 < i && Number(day) === 1) {
+            spanElement.innerHTML = `<font color="${new_month_colors.fg}">${spanElement.innerHTML}</font>`;
+            tdElement.style.backgroundColor=new_month_colors.bg;
+            tdElement.style.border = `3px groove ${new_month_colors.fg}`;
       }
     }
   }
