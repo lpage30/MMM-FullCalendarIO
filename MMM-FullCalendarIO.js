@@ -29,15 +29,8 @@ const FullCalendarIO = {
 		if (midnightTimeoutId) {
 			clearTimeout(midnightTimeoutId);
 		}
-	}
-};
-Module.register('MMM-FullCalendarIO', {
-	// Default module config.
-	defaults: {
-		updateInterval: 0,
-		identifier: 'calendar',
-		fullcalendar: {},
 	},
+
 	resume: function () {
 		this.updateDom();
 		FullCalendarIO.startIntervalUpdate(this);
@@ -66,5 +59,54 @@ Module.register('MMM-FullCalendarIO', {
 		if (this.config.cssClassname) calendarFrame.className = this.config.cssClassname;
 		return calendarFrame;
 	},
-});
-
+	defaults: {
+		updateInterval: 0,
+		identifier: 'calendar',
+		themeName: 'flatly',
+		backgroundColor: '#A9A9A9',
+		dayNameHTMLTransformation: (dayName) => dayName,
+		monthDayNumberHTMLTransformation: (month, day, momentModule) => `${momentModule.monthsShort(month-1)} ${day}`,
+		fullcalendar: {
+			themeSystem: 'bootstrap4',
+			height: 'parent',
+			contentHeight: 'auto',
+			header: {
+				left: '',
+				center: 'title',
+				right: ''
+			},
+			footer: {
+				left: 'listDay,listWeek,month,threeMonths,  prev,today,next',
+				center: '',
+				right: '',
+			},
+			defaultView: 'threeMonths',
+			views: {
+				listDay: { buttonText: 'day' },
+				listWeek: { buttonText: 'week'},
+				threeMonths: { type: 'multimonth', duration: { weeks: 12 }, buttonText: '3-mos' },
+			},
+			// to be used in eventClick to show event in EventContent div below
+			eventClick: function showEventContentDiv (calEvent, jsEvent, view) {
+				$('#eventTitle').html('');
+				$('#eventStart').html('');
+				$('#eventEnd').html('');
+				$("#eventDescription").html('');
+				$("#eventLocation").html('');
+				
+				$('#eventTitle').html(`<B>${calEvent.title}</B>`);
+				if(calEvent.start) $('#eventStart').html(`Start: ${moment(calEvent.start).format('MMM Do h:mm A')}`)
+				if (calEvent.end) $('#eventEnd').html(`End: ${moment(calEvent.end).format('MMM Do h:mm A')}`);
+				if (calEvent.description) $("#eventDescription").html(`Description: ${calEvent.description}`);
+				if (calEvent.location) $("#eventLocation").html(`Location: ${calEvent.location}`);
+					$("#eventContent").dialog({ modal: true });
+					return false;
+			},
+		},  
+	}
+};
+if (typeof Module !== 'undefined') {
+	Module.register('MMM-FullCalendarIO', FullCalendarIO);
+} else {
+	module.exports = FullCalendarIO;
+}

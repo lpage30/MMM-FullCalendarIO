@@ -1,14 +1,36 @@
 const fs = require('fs');
 const MODULE_NAME = 'MMM-FullCalendarIO';
-
+const { defaults: CALENDAR_DEFAULTS } = require('./MMM-FullCalendarIO');
 const GENERATED_CODE_DIRECTORY = './generatedCalendarHTML';
 
 const CALENDAR_JS_TEMPLATE_FILEPATH = './templates/calendarjs.template';
 const CALENDAR_HTML_TEMPLATE_FILEPATH = './templates/calendarhtml.template';
+const MULTIMONTH_CUSTOMVIEW_JS_FILEPATH = './templates/multimonthCustomView.js'
 
+const THEME_STYLESHEET_PLACEMENT_TOKEN = new RegExp('{{THEME_STYLESHEET}}', 'ig');
+const BACKGROUND_COLOR_PLACEMENT_TOKEN = new RegExp('{{BACKGROUND_COLOR}}', 'ig');
 const CONFIGURATION_PLACEMENT_TOKEN = new RegExp('{{CALENDAR_CONFIGURATION}}', 'ig');
 const CALENDAR_JS_PLACEMENT_TOKEN = new RegExp('{{CALENDAR_JS}}', 'ig');
+const DAY_NAME_TRANSFORMATION_F_PLACEMENT_TOKEN = new RegExp('{{DAY_NAME_TRANSFORMATION_F}}', 'ig');
+const MONTH_DAY_NUMBER_MOMENT_TRANSFORMATION_F_PLACEMENT_TOKEN = new RegExp('{{MONTH_DAY_NUMBER_MOMENT_TRANSFORMATION_F}}', 'ig');
 const TAB_SPACING = '    ';
+
+const generateStylesheet = (themeSystem, themeName) => {
+    let url = '';
+    if (themeSystem === 'jquery-ui') {
+        url = 'https://code.jquery.com/ui/1.12.1/themes/' + themeName + '/jquery-ui.css';
+    }
+    else if (themeSystem === 'bootstrap3') {
+        url = 'https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css';
+        if (themeName) url = 'https://bootswatch.com/3/' + themeName + '/bootstrap.min.css';
+    }
+    else if (themeSystem === 'bootstrap4') {
+        url = 'https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css';
+        if (themeName) url = 'https://bootswatch.com/4/' + themeName + '/bootstrap.min.css';
+    }
+    return url.length > 0 ? `<link rel="stylesheet" type="text/css" href="${url}">` : '';
+}
+
 const toJavascriptString = (object, spacing = '') => {
     if(typeof object === 'string') return `"${object}"`;
     if(typeof object === 'function' || typeof object === 'number') return object.toString();
@@ -46,7 +68,9 @@ const getCalendarConfigurations = () => {
     const { modules } = require('../../config/config.js');
     modules.forEach((module, index) => {
         if (module.module === MODULE_NAME) {
-            calendarConfigurations.push(module.config);
+            const config = Object.assign({}, CALENDAR_DEFAULTS, module.config);
+            config.fullcalendar = Object.assign({},CALENDAR_DEFAULTS.fullcalendar, module.config.fullcalendar);
+            calendarConfigurations.push(config);
         }
     });
     return calendarConfigurations;
@@ -54,15 +78,22 @@ const getCalendarConfigurations = () => {
 /**
  * Generate string of Javascript code to be placed in HTML file 
  * to define (and render) configured calendar(s)
- * @param {Object} config single calendar configuration
+ * @param {Object} config single MM FullCalendar configuration
  * @returns {string} javascript snippet to be written to html file contents.
  */
 const generateCalendarJS = (config) => {
-    const calendarJSDefaults = require('./templates/calendarJsDefaults');
-    const calendarConfiguration = Object.assign({}, config.fullcalendar, calendarJSDefaults);
-    const calendarConfigurationString = toJavascriptString(calendarConfiguration)
-    const calendarJS = fs.readFileSync(CALENDAR_JS_TEMPLATE_FILEPATH, 'utf8');
-    return calendarJS.replace(CONFIGURATION_PLACEMENT_TOKEN, calendarConfigurationString);
+    const dayNameHTMLTransformFString = toJavascriptString(config.dayNameHTMLTransformation);
+    const monthDayMomentHTMLTransformFString = toJavascriptString(config.monthDayNumberHTMLTransformation);
+    const calendarConfigurationString = toJavascriptString(config.fullcalendar);
+
+    let multiMonthView = fs.readFileSync(MULTIMONTH_CUSTOMVIEW_JS_FILEPATH, 'utf8');
+    multiMonthView = multiMonthView.replace(DAY_NAME_TRANSFORMATION_F_PLACEMENT_TOKEN, dayNameHTMLTransformFString);
+    multiMonthView = multiMonthView.replace(MONTH_DAY_NUMBER_MOMENT_TRANSFORMATION_F_PLACEMENT_TOKEN, monthDayMomentHTMLTransformFString);
+
+    let calendarJS = fs.readFileSync(CALENDAR_JS_TEMPLATE_FILEPATH, 'utf8');
+    calendarJS = calendarJS.replace(CONFIGURATION_PLACEMENT_TOKEN, calendarConfigurationString)
+
+    return `${multiMonthView}\n${calendarJS}`;
 };
 /**
  * Genearte string of HTML code to be written to HTML file for configured calendar(s)
@@ -70,9 +101,15 @@ const generateCalendarJS = (config) => {
  * @returns {string} HTML file contents to be written to html file
  */
 const generateCalendarHTML = (config) => {
-    const calendarHTML = fs.readFileSync(CALENDAR_HTML_TEMPLATE_FILEPATH, 'utf8');
+    const cssLink = generateStylesheet(config.fullcalendar.themeSystem, config.themeName);
     const calendarJS = generateCalendarJS(config);
-    return calendarHTML.replace(CALENDAR_JS_PLACEMENT_TOKEN, calendarJS);
+
+    let calendarHTML = fs.readFileSync(CALENDAR_HTML_TEMPLATE_FILEPATH, 'utf8');
+    calendarHTML = calendarHTML.replace(THEME_STYLESHEET_PLACEMENT_TOKEN, cssLink);
+    calendarHTML = calendarHTML.replace(CALENDAR_JS_PLACEMENT_TOKEN, calendarJS);
+    calendarHTML = calendarHTML.replace(BACKGROUND_COLOR_PLACEMENT_TOKEN, config.backgroundColor);
+
+    return calendarHTML;
 };
 /**
  * Load configurd calendars.

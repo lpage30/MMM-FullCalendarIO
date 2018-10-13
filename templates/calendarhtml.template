@@ -11,6 +11,8 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.9.0/fullcalendar.min.js"></script>
 <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
 <script src='https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.9.0/gcal.js'></script>
+<link href='https://use.fontawesome.com/releases/v5.0.6/css/all.css' rel='stylesheet'>
+{{THEME_STYLESHEET}}
 <script type='text/javascript'>
   {{CALENDAR_JS}}
 </script>
@@ -23,17 +25,13 @@
     font-size: 14px;
     background: transparent;
   }
-
-  .fc-day-top.fc-other-month {
-    opacity: 1; 
-  }
-  
+ 
   #calendar {
     overflow: visible !important;
     margin: 4em 4.5em 0 4em;
     width: 90%;
     height: 100%;
-    background: lightgrey;
+    background: {{BACKGROUND_COLOR}};
   }
 
 </style>
