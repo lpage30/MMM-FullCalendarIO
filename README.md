@@ -126,16 +126,95 @@ The following properties can be configured:
 ````	
 </LI></UL>
 		</td>
-	</tr>		
+	</tr>
+    <tr>
+            <td><code>backgroundColor</code></td>
+            <td>The background color of the rendered calendar area.
+            <br><b>Default value:</B><code>#A9A9A9</code> (grey)
+            </td>
+    </tr>
+    <tr>
+            <td><code>dayNameHTMLTransformation</code></td>
+            <td>Function called with day name (sun - sat) to transform and render that dayname with HTML formatting (if desired).
+            <br><b>Default value:</B><code>(dayName) => dayName</code> (no transformation)
+            </td>
+    </tr>
+    <tr>
+            <td><code>monthDayNumberHTMLTransformation</code></td>
+            <td>Function called with Month Number (1 - 12), Day Number (1 - 31), and [Moment](https://momentjs.com/) module (to help in rendering things associated with the month and day) to transform and render that day with HTML formatting (if desired).
+            <br><b>Default value:</B><code>(month, day, momentModule) => `${momentModule.monthsShort(month-1)} ${day}`</code> shortMonth name and day number
+            </td>
+    </tr>
+    <tr>
+            <td><code>themeName</code></td>
+            <td>The name of the specific theme within the <code>fullcalendar.themeSystem</code> specified theme for css.
+            <br><b>Default value:</B><code>flatly</code> (bootstrap4 themesystem theme)
+            </td>
+    </tr>
     <tr>
             <td><code>fullcalendar</code></td>
             <td>The [fullcalendar IO option object](https://fullcalendar.io/docs/initialization) passed to the<br>
                 fullcalendar function in the HTML.<br>
                 This is passed without interpretation to the fullcalendar.io function call in the javascript of the generated HTML file.
-                <br><b>Default value:</b> <code>{}</code> no configuration
-            </td>
-    </tr>
+                <br><b>Default value:</b>  
+
+    ```javascript
+    {
+        themeSystem: 'bootstrap4',
+        views: {
+            listDay: { buttonText: 'day' },
+            listWeek: { buttonText: 'week'},
+            threeMonths: { type: 'multimonth', duration: { weeks: 12 }, buttonText: '3-mos' },
+        },
+        defaultView: 'threeMonths',
+        height: 'parent',
+        contentHeight: 'auto',
+        header: {
+            left: '',
+            center: 'title',
+            right: ''
+        },
+        footer: {
+            left: 'listDay,listWeek,month,threeMonths,  prev,today,next',
+            center: '',
+            right: '',
+        },
+        // to be used in eventClick to show event in EventContent div below
+        eventClick: function showEventContentDiv (calEvent, jsEvent, view) {
+            $('#eventTitle').html('');
+            $('#eventStart').html('');
+            $('#eventEnd').html('');
+            $("#eventDescription").html('');
+            $("#eventLocation").html('');
+            
+            $('#eventTitle').html(`<B>${calEvent.title}</B>`);
+            if(calEvent.start) $('#eventStart').html(`Start: ${moment(calEvent.start).format('MMM Do h:mm A')}`)
+            if (calEvent.end) $('#eventEnd').html(`End: ${moment(calEvent.end).format('MMM Do h:mm A')}`);
+            if (calEvent.description) $("#eventDescription").html(`Description: ${calEvent.description}`);
+            if (calEvent.location) $("#eventLocation").html(`Location: ${calEvent.location}`);
+                $("#eventContent").dialog({ modal: true });
+                return false;
+        },
+    }
+    ```
+Defaults result in following:
+- Bootstrap4 'flatly' theme style
+- 4 types of views used:
+    - list events in current day
+    - list events in current week
+    - month view
+    - 3 month view  (Uses new custom multimonth view)
+- default view is 3 month view
+- scale height to limit of the calendar's parent container. Since this is rendered as an IFrame that covers a full screen, the limit is the full screen.
+- automatically scale the height of the calendar contents
+- show title of calendar in top center of calendar
+- On the bottom left of the calendar show 4 buttons for day, week, month, and 3 month views.
+- On the bottom left of the calendar, to the right of the 4 buttons show navigation buttons with today in the center.
+- On event click render the event data in a jquery 'popup' 'dialog' object.
+
+All that is needed is the data for your events.
+</td>
+</tr>
 </table>
 ## Known Issues
-- When you 'click' on a scheduled item to show the contents of that item, it will popup with those contents using whatever background is present in the baseline MagicMirror installation. This can cause the text to be difficult to read. This is currently being worked on.
 - In a google calendar integration when you 'click' on a scheduled item, you are brought to the google rendering of that text. Once you get here you seemingly cannot 'get back'. This is currently be worked on.
