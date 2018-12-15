@@ -4,14 +4,6 @@ const FullCalendarIO = {
 			theModule.intervalId = setInterval(() => theModule.updateDom(), theModule.config.updateInterval);
 		}
 	},
-
-	stopIntervalUpdate: (theModule) => {
-		const intervalId = theModule.intervalId;
-		theModule.intervalId = null;
-		if (intervalId) {
-			clearInterval(intervalId);
-		}
-	},
 	startMidnightRefresh: (theModule) => {
 		const tomorrow = new Date();
 		tomorrow.setDate(tomorrow.getDate() + 1);
@@ -23,23 +15,12 @@ const FullCalendarIO = {
 			FullCalendarIO.startMidnightRefresh(theModule);
 		}, msTilMidnight);
 	},
-	stopMidnightRefresh: (theModule) => {
-		const midnightTimeoutId = theModule.midnightTimeoutId;
-		theModule.midnightTimeoutId = null;
-		if (midnightTimeoutId) {
-			clearTimeout(midnightTimeoutId);
-		}
-	},
-
 	resume: function () {
 		this.updateDom();
-		FullCalendarIO.startIntervalUpdate(this);
-		FullCalendarIO.startMidnightRefresh(this);
 	},
 
 	suspend: function () {
-		FullCalendarIO.stopIntervalUpdate(this);
-		FullCalendarIO.stopMidnightRefresh(this);
+		this.updateDom();
 	},
 
 	start: function () {
@@ -48,12 +29,10 @@ const FullCalendarIO = {
 		FullCalendarIO.startMidnightRefresh(this);
 	},
 
-	stop: function () {
-		FullCalendarIO.stopIntervalUpdate(this);
-		FullCalendarIO.stopMidnightRefresh(this);
-	},
-  
 	getDom: function () {
+		if (this.hidden) {
+			return document.createElement('div');
+		}
 		var calendarFrame = document.createElement("iframe");
 		calendarFrame.setAttribute('src', `${location.href}${this.data.path}/generatedCalendarHTML/${this.config.identifier}.html`);
 		if (this.config.cssClassname) calendarFrame.className = this.config.cssClassname;
