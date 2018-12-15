@@ -16,21 +16,24 @@ const FullCalendarIO = {
 		}, msTilMidnight);
 	},
 	resume: function () {
+		this.render = true;
 		this.updateDom();
 	},
 
 	suspend: function () {
+		this.render = false;
 		this.updateDom();
 	},
 
 	start: function () {
+		this.render = !this.hidden;
 		this.updateDom();
 		FullCalendarIO.startIntervalUpdate(this);
 		FullCalendarIO.startMidnightRefresh(this);
 	},
 
 	getDom: function () {
-		if (this.hidden) {
+		if (!this.render) {
 			return document.createElement('div');
 		}
 		var calendarFrame = document.createElement("iframe");
