@@ -1,5 +1,5 @@
 # MMM-FullCalendarIO
-A [MagicMirror](https://magicmirror.builders/) module that renders calendars using the [fullcalendar.io](https://fullcalendar.io/) javascript libraries. The basic approach here is you specify your fullcalendar configuration, and then run `npm run build` on your module to generate HTML files that render your calendar. These files are rendered in a webview which has similar restrictions to [MMM-Webview](https://github.com/lpage30/MMM-Webview)
+A [MagicMirror](https://magicmirror.builders/) module that renders calendars using the [fullcalendar.io](https://fullcalendar.io/) javascript libraries. 
 
 ## Setting up to use this Module
 There are a 2 things you will need to do in your overall configuration so you can then render these webview(s).
@@ -33,11 +33,16 @@ This is a kinda optional. Things do render without it, but the sizing is all cra
 ````
 I did some adjustments based on the page I was loading as in my application the rendered webview was 'too wide' and then shifted too much to the left.
 
-## Using the module
-This module requires an additional step to convert your configuration for use by the module.
+3. ***Install and Build*** This module uses angular to render the calendar. After pulling down the module to your modules directory as MMM-FullCalendarIO, you will need to:
 
-1. Add or Change 1 or more `MMM-FullCalendarIO` module configurations in `~/MagicMirror/config/config.js` file:
-    ````javascript
+    * `cd modules/MMM-FullCalendarIO`
+    * `npm install`
+    * `npm run build`
+
+## Configuration
+ Add or Change 1 or more `MMM-FullCalendarIO` module configurations in `~/MagicMirror/config/config.js` file:
+
+    ```javascript
     {
         module: "MMM-FullCalendarIO",
         position: "fullscreen_above",	
@@ -51,20 +56,7 @@ This module requires an additional step to convert your configuration for use by
             }
         }
     }
-    ````
-2. Build (generate) the html file(s) for your added module(s)  
-    ```bashscript
-    cd ~/MagicMirror/modules/MMM-FullCalendarIO
-    npm run build
     ```
-    This does the following:
-    -  clears out the existing generated HTML files
-    - loads `~/MagicMirror/config/config.js` reading all `MMM-FullCalendarIO` module definitions.
-    - Generates 1 HTML file for each `MMM-FullCalendarIO` module definition.
-3. Restart your MagicMirror
-
-## Configuration options
-The following properties can be configured:
 <table width="100%">
 	<tr>
 		<th>Option</th>
@@ -134,18 +126,6 @@ The following properties can be configured:
             </td>
     </tr>
     <tr>
-            <td><code>dayNameHTMLTransformation</code></td>
-            <td>Function called with day name (sun - sat) to transform and render that dayname with HTML formatting (if desired).
-            <br><b>Default value:</B><code>(dayName) => dayName</code> (no transformation)
-            </td>
-    </tr>
-    <tr>
-            <td><code>monthDayNumberHTMLTransformation</code></td>
-            <td>Function called with Month Number (1 - 12), Day Number (1 - 31), and [Moment](https://momentjs.com/) module (to help in rendering things associated with the month and day) to transform and render that day with HTML formatting (if desired).
-            <br><b>Default value:</B><code>(month, day, momentModule) => `${momentModule.monthsShort(month-1)} ${day}`</code> shortMonth name and day number
-            </td>
-    </tr>
-    <tr>
             <td><code>themeName</code></td>
             <td>The name of the specific theme within the <code>fullcalendar.themeSystem</code> specified theme for css.
             <br><b>Default value:</B><code>flatly</code> (bootstrap4 themesystem theme)
@@ -179,22 +159,6 @@ The following properties can be configured:
             center: '',
             right: '',
         },
-        // to be used in eventClick to show event in EventContent div below
-        eventClick: function showEventContentDiv (calEvent, jsEvent, view) {
-            $('#eventTitle').html('');
-            $('#eventStart').html('');
-            $('#eventEnd').html('');
-            $("#eventDescription").html('');
-            $("#eventLocation").html('');
-            
-            $('#eventTitle').html(`<B>${calEvent.title}</B>`);
-            if(calEvent.start) $('#eventStart').html(`Start: ${moment(calEvent.start).format('MMM Do h:mm A')}`)
-            if (calEvent.end) $('#eventEnd').html(`End: ${moment(calEvent.end).format('MMM Do h:mm A')}`);
-            if (calEvent.description) $("#eventDescription").html(`Description: ${calEvent.description}`);
-            if (calEvent.location) $("#eventLocation").html(`Location: ${calEvent.location}`);
-                $("#eventContent").dialog({ modal: true });
-                return false;
-        },
     }
     ```
 Defaults result in following:
@@ -216,5 +180,3 @@ All that is needed is the data for your events.
 </td>
 </tr>
 </table>
-## Known Issues
-- In a google calendar integration when you 'click' on a scheduled item, you are brought to the google rendering of that text. Once you get here you seemingly cannot 'get back'. This is currently be worked on.
