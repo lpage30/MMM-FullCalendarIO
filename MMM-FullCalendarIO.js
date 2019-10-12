@@ -1,6 +1,25 @@
+function getFullConfiguration(fullCalendarIOModule) {
+	if (fullCalendarIOModule.fullConfig) return fullCalendarIOModule.fullConfig;
+
+	const config = {...fullCalendarIOModule.defaults, ...fullCalendarIOModule.config};
+	if (fullCalendarIOModule.config.fullcalendar) {
+		config.fullcalendar = {...fullCalendarIOModule.defaults.fullcalendar, ...fullCalendarIOModule.config.fullcalendar};
+		if (fullCalendarIOModule.config.fullcalendar.header) {
+			config.fullcalendar.header = {...fullCalendarIOModule.defaults.fullcalendar.header, ...fullCalendarIOModule.config.fullcalendar.header};
+		}
+		if (fullCalendarIOModule.config.fullcalendar.footer) {
+			config.fullcalendar.footer = {...fullCalendarIOModule.defaults.fullcalendar.footer, ...fullCalendarIOModule.config.fullcalendar.footer};
+		}
+		if (fullCalendarIOModule.config.fullcalendar.views) {
+			config.fullcalendar.views = {...fullCalendarIOModule.defaults.fullcalendar.views, ...fullCalendarIOModule.config.fullcalendar.views};
+		}
+	}
+	fullCalendarIOModule.fullConfig = config;
+	return fullCalendarIOModule.fullConfig;
+}
 Module.register('MMM-FullCalendarIO', {
 	startIntervalUpdate: () => {
-		const config = this.getFullConfiguration();
+		const config = getFullConfiguration(this);
 		if (config.updateInterval > 0) {
 			this.intervalId = setInterval(() => this.updateDom(), config.updateInterval);
 		}
@@ -43,37 +62,19 @@ Module.register('MMM-FullCalendarIO', {
 		}
 	},
 	start: function () {
-		const config = this.getFullConfiguration();
+		const config = getFullConfiguration(this);
 		this.serverRunning = false
 		this.sendSocketNotification('REQUIRE_./application_paths');
 		this.sendSocketNotification('MODULE_STARTED', config);
 	},
-	getFullConfiguration: function () {
-		if (this.fullConfig) return this.fullConfig;
-
-		const config = {...this.defaults, ...this.config};
-		if (this.config.fullcalendar) {
-			config.fullcalendar = {...this.defaults.fullcalendar, ...this.config.fullcalendar};
-			if (this.config.fullcalendar.header) {
-				config.fullcalendar.header = {...this.defaults.fullcalendar.header, ...this.config.fullcalendar.header};
-			}
-			if (this.config.fullcalendar.footer) {
-				config.fullcalendar.footer = {...this.defaults.fullcalendar.footer, ...this.config.fullcalendar.footer};
-			}
-			if (this.config.fullcalendar.views) {
-				config.fullcalendar.views = {...this.defaults.fullcalendar.views, ...this.config.fullcalendar.views};
-			}
-		}
-		this.fullConfig = config;
-		return this.fullConfig;
-	},
+	
 	getStyles: function () {
 		return [
 			this.file('custom.css'),
 		]
 	},
 	getDom: function () {
-		const config = this.getFullConfiguration();
+		const config = getFullConfiguration(this);
 		var calendarUI;
 		if(this.serverRunning) {
 			calendarUI = document.createElement("iframe");
