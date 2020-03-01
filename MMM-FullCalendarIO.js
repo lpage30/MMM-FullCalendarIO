@@ -53,6 +53,9 @@ Module.register('MMM-FullCalendarIO', {
 			this.startIntervalUpdate();
 			this.startMidnightRefresh();
 		}
+		if (notification === 'SERVER_STOPPED') {
+			this.serverRunning = false;
+		}
 		if (notification.startsWith('REQUIRE_')){
 			const moduleName = notification.split('/').pop();
 			if ('application_paths' === moduleName) {

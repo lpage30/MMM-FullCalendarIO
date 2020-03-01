@@ -32,7 +32,41 @@ module.exports = NodeHelper.create({
             const result = require(notification.substring(8))
             this.sendSocketNotification(notification, result)
         }
-	},
+    },
+    stopServer: function () {
+        if (this.server) {
+            console.log('Stopping FullCalendarIO Server.');
+            this.server.kill();
+            this.server = undefined;
+            this.serverRunning = false;
+            this.sendSocketNotification('SERVER_STOPPED');
+        }
+    },
+    startServer: function () {
+        if (this.serverRunning && this.server) {
+            return;
+        }
+        // Start angular server for Module
+        this.server = spawn(
+            'python3',
+            ['-m', 'http.server', MMM_SERVER_PORT, '--bind', HOST_ADDRESS],
+            {
+                cwd: `${__dirname}/dist/MMM-FullCalendarIO`, 
+            },
+        );
+        this.serverRunning = true;
+        this.sendSocketNotification('SERVER_RUNNING');
+        const nodeHelper = this;
+        this.server.on('error', err => {
+            console.error('FullCalendarIO Server ERROR', err);
+            nodeHelper.stopServer();
+        })
+        this.server.on('exit', (code, signal) => {
+            console.error('FullCalendarIO Server EXIT', code, signal);
+            nodeHelper.stopServer();
+        })
+        console.log(`Started ${this.name} at ${HOST_ADDRESS}:${MMM_SERVER_PORT}`);
+    },
 
     // Subclass start method.
     start: function () {
@@ -53,36 +87,10 @@ module.exports = NodeHelper.create({
                 res.status(200).send({ success: true, config: this.config[req.params.identifier] });
             }
         });
-       
-        // Start angular server for Module
-        this.server = spawn(
-            'ng',
-            ['serve', '--host', HOST_ADDRESS, '--port', MMM_SERVER_PORT],
-            {
-                cwd: __dirname, 
-            },
-        );
-        const nodeHelper = this;
-        this.server.stdout.on('data', data => {
-            const message = data.toString()
-            console.info('FullCalendarIO Server', message)
-            if (message.indexOf(`listening on ${HOST_ADDRESS}:${MMM_SERVER_PORT}`) > -1) {
-                nodeHelper.serverRunning = true;
-                nodeHelper.sendSocketNotification('SERVER_RUNNING');
-            }
-        });
-        this.server.on('error', err => {
-            console.error('FullCalendarIO Server ERROR', err);
-        })
-        this.server.on('exit', (code, signal) => {
-            console.error('FullCalendarIO Server EXIT', code, signal);
-        })
-        console.log(`Started ${this.name} at ${HOST_ADDRESS}:${MMM_SERVER_PORT}`);
+        this.startServer();
     },
     stop: function () {
-        if (this.server) {
-            this.server.kill();
-        }
+        this.stopServer();
     }
 });
 
